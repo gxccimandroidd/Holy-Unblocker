@@ -120,12 +120,15 @@
 </div>
 
 <script>
-  // Opens a new tab with about:blank and immediately navigates it to the current URL.
   document.getElementById('openBlankBtn')?.addEventListener('click', () => {
-    // We assume the current URL (window.location.href) is the one you want to load.
-    const contentURL = window.location.href; 
+    // REPLACE __ORIGINAL_URL__ with the actual variable used by your proxy.
+    const originalURL = __ORIGINAL_URL__; 
 
-    // 1. Open the new blank tab.
+    if (!originalURL) {
+        console.error("Original URL variable not found!");
+        return;
+    }
+
     const w = window.open('about:blank', '_blank', 'noopener,noreferrer');
 
     if (!w) {
@@ -133,15 +136,12 @@
       return;
     }
     
-    // 2. Navigate the new tab to the current page's URL (uncloaking).
     try {
-      // Use replace() to avoid the 'about:blank' entry in the new tab's history.
-      w.location.replace(contentURL); 
+      w.location.replace(originalURL); 
     } catch (e) {
       console.error("Could not navigate the new tab:", e);
-      // Fallback in case replace is blocked (e.g., strict browser security)
       w.close();
-      window.open(contentURL, '_blank', 'noopener,noreferrer');
+      window.open(originalURL, '_blank', 'noopener,noreferrer');
     }
   });
 </script>
