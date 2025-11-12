@@ -23,6 +23,12 @@
         <input type="submit" value="Apply" />
       </form>
       <a href="{{route}}{{/questions}}">{{mask}}{{Find Icon URL}}</a>
+
+      <!-- Open about:blank in a new tab -->
+      <div class="blank-tab-control" style="margin-top:8px">
+        <button id="openBlankBtn" type="button" class="btn">Open blank tab</button>
+      </div>
+
       <p class="cseltitle">{{mask}}{{Wisp Protocol Transport}}</p>
       <div class="radio-group {{wisp-transport}}-list">
         <label>
@@ -113,3 +119,26 @@
     </div>
   </div>
 </div>
+
+<script>
+  // Opens a new tab with about:blank. Browsers control history/private browsing;
+  // this cannot force a private window or remove history.
+  document.getElementById('openBlankBtn')?.addEventListener('click', () => {
+    const w = window.open('about:blank', '_blank', 'noopener,noreferrer');
+    if (!w) {
+      console.warn('Popup blocked');
+      return;
+    }
+    try {
+      w.document.open();
+      w.document.write(
+        '<!doctype html><meta charset="utf-8"><title>Blank</title>' +
+        '<style>body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:40px}</style>' +
+        '<p>This tab was opened with about:blank.</p>'
+      );
+      w.document.close();
+    } catch (e) {
+      // Some browsers restrict writing to about:blank; ignore if blocked
+    }
+  });
+</script>
