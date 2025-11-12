@@ -24,7 +24,6 @@
       </form>
       <a href="{{route}}{{/questions}}">{{mask}}{{Find Icon URL}}</a>
 
-      <!-- Open about:blank in a new tab -->
       <div class="blank-tab-control" style="margin-top:8px">
         <button id="openBlankBtn" type="button" class="btn">Open blank tab</button>
       </div>
@@ -99,7 +98,7 @@
       </div>
       <p class="cseltitle">Icon Presets</p>
       <select id="icon-list">
-        <option><!-- Leave this blank to avoid a bug. --></option>
+        <option></option>
         <option>{{Google}}</option>
         <option>{{Bing}}</option>
         <option>{{Google}} Drive</option>
@@ -121,24 +120,28 @@
 </div>
 
 <script>
-  // Opens a new tab with about:blank. Browsers control history/private browsing;
-  // this cannot force a private window or remove history.
+  // Opens a new tab with about:blank and immediately navigates it to the current URL.
   document.getElementById('openBlankBtn')?.addEventListener('click', () => {
+    // We assume the current URL (window.location.href) is the one you want to load.
+    const contentURL = window.location.href; 
+
+    // 1. Open the new blank tab.
     const w = window.open('about:blank', '_blank', 'noopener,noreferrer');
+
     if (!w) {
       console.warn('Popup blocked');
       return;
     }
+    
+    // 2. Navigate the new tab to the current page's URL (uncloaking).
     try {
-      w.document.open();
-      w.document.write(
-        '<!doctype html><meta charset="utf-8"><title>Blank</title>' +
-        '<style>body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:40px}</style>' +
-        '<p>This tab was opened with about:blank.</p>'
-      );
-      w.document.close();
+      // Use replace() to avoid the 'about:blank' entry in the new tab's history.
+      w.location.replace(contentURL); 
     } catch (e) {
-      // Some browsers restrict writing to about:blank; ignore if blocked
+      console.error("Could not navigate the new tab:", e);
+      // Fallback in case replace is blocked (e.g., strict browser security)
+      w.close();
+      window.open(contentURL, '_blank', 'noopener,noreferrer');
     }
   });
 </script>
